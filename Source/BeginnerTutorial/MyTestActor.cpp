@@ -18,6 +18,11 @@ void AMyTestActor::BeginPlay()
 	
 }
 
+UAbilitySystemComponent* AMyTestActor::GetAbilitySystemComponent() const
+{
+	return nullptr;
+}
+
 // Called every frame
 void AMyTestActor::Tick(float DeltaTime)
 {
