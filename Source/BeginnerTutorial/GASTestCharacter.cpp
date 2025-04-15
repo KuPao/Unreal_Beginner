@@ -10,6 +10,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "BasicAttributeSet.h"
 
 // Sets default values
 AGASTestCharacter::AGASTestCharacter()
@@ -49,15 +50,9 @@ AGASTestCharacter::AGASTestCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
 	// Init AbilitySystem 
-	AbilitySystem = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystem");
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystem");
 	
 	//https ://blog.csdn.net/jfengsky/article/details/129314240
-
-}
-
-UAbilitySystemComponent* AGASTestCharacter::GetAbilitySystemComponent() const
-{
-	return AbilitySystem;
 }
 
 // Called when the game starts or when spawned
@@ -73,6 +68,10 @@ void AGASTestCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+	}
+	if (IsValid(AbilitySystemComponent))
+	{
+		BasicAttributeSet = AbilitySystemComponent->GetSet<UBasicAttributeSet>();
 	}
 }
 

@@ -3,33 +3,73 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Character.h"
+#include "InputActionValue.h"
 
 #include "AbilitySystemInterface.h"
 #include "AbilitySystemComponent.h"
 
 #include "MyTestActor.generated.h"
 
-UCLASS()
-class BEGINNERTUTORIAL_API AMyTestActor : public AActor, public IAbilitySystemInterface
+UCLASS(config = Game)
+class BEGINNERTUTORIAL_API AMyTestActor : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
+
+	/** Camera boom positioning the camera behind the character */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class USpringArmComponent* CameraBoom;
+
+	/** Follow camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* FollowCamera;
+
+	/** MappingContext */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputMappingContext* DefaultMappingContext;
+
+	/** Jump Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* JumpAction;
+
+	/** Move Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* MoveAction;
+
+	/** Look Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* LookAction;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS", meta = (AllowPrivateAccess = "true"))
+	class UAbilitySystemComponent* AbilitySystemComponent;
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override
+	{
+		return AbilitySystemComponent;
+	}
+
+public:
+	// Sets default values for this character's properties
 	AMyTestActor();
 
-	//~ Begin IAbilitySystemInterface
-	/** Returns our Ability System Component. */
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	//~ End IAbilitySystemInterface
+protected:
+
+	/** Called for movement input */
+	void Move(const FInputActionValue& Value);
+
+	/** Called for looking input */
+	void Look(const FInputActionValue& Value);
 
 protected:
+	// APawn interface
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	/** Returns CameraBoom subobject **/
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	/** Returns FollowCamera subobject **/
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };

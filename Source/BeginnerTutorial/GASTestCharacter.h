@@ -41,10 +41,16 @@ class BEGINNERTUTORIAL_API AGASTestCharacter : public ACharacter, public IAbilit
 	class UInputAction* LookAction;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CharacterBase")
-	UAbilitySystemComponent* AbilitySystem;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS", meta = (AllowPrivateAccess = "true"))
+	class UAbilitySystemComponent* AbilitySystemComponent;
 
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const;
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override
+	{
+		return AbilitySystemComponent;
+	}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS", meta = (AllowPrivateAccess = "true"))
+	const class UAttributeSet* BasicAttributeSet;
 
 public:
 	// Sets default values for this character's properties
