@@ -10,6 +10,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "AbilitySystemComponent.h"
 #include "BasicAttributeSet.h"
 
 // Sets default values
@@ -50,7 +51,7 @@ AGASTestCharacter::AGASTestCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
 	// Init AbilitySystem 
-	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystem");
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	
 	//https ://blog.csdn.net/jfengsky/article/details/129314240
 }
@@ -61,14 +62,15 @@ void AGASTestCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
-	//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-	}
+	////Add Input Mapping Context
+	//if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	//{
+	//	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+	//	{
+	//		Subsystem->AddMappingContext(DefaultMappingContext, 0);
+	//	}
+	//}
+
 	if (IsValid(AbilitySystemComponent))
 	{
 		BasicAttributeSet = AbilitySystemComponent->GetSet<UBasicAttributeSet>();
@@ -83,6 +85,10 @@ void AGASTestCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 		//Jumping
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+
+		//Slaping
+		EnhancedInputComponent->BindAction(SlapAction, ETriggerEvent::Triggered, this, &AGASTestCharacter::Slap);
+		EnhancedInputComponent->BindAction(SlapAction, ETriggerEvent::Completed, this, &AGASTestCharacter::StopSlaping);
 
 		//Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AGASTestCharacter::Move);
@@ -128,4 +134,22 @@ void AGASTestCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AGASTestCharacter::Slap()
+{
+	bPressedSlap = true;
+	SlapKeyHoldTime = 0.0f;
+}
+
+void AGASTestCharacter::StopSlaping()
+{
+	bPressedSlap = false;
+	ResetJumpState();
+}
+
+void AGASTestCharacter::ResetSlapState()
+{
+	bPressedSlap = false;
+	SlapKeyHoldTime = 0.0f;
 }

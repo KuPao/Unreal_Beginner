@@ -7,7 +7,6 @@
 #include "InputActionValue.h"
 
 #include "AbilitySystemInterface.h"
-#include "AbilitySystemComponent.h"
 
 #include "GASTestCharacter.generated.h"
 
@@ -32,6 +31,10 @@ class BEGINNERTUTORIAL_API AGASTestCharacter : public ACharacter, public IAbilit
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* JumpAction;
 
+	/** Slap Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* SlapAction;
+
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* MoveAction;
@@ -40,17 +43,23 @@ class BEGINNERTUTORIAL_API AGASTestCharacter : public ACharacter, public IAbilit
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
 
-public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
+	float SlapKeyHoldTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character, meta = (AllowPrivateAccess = "true"))
+	uint8 bPressedSlap : 1;
+
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS", meta = (AllowPrivateAccess = "true"))
 	class UAbilitySystemComponent* AbilitySystemComponent;
 
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override
+	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override
 	{
 		return AbilitySystemComponent;
 	}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS", meta = (AllowPrivateAccess = "true"))
-	const class UAttributeSet* BasicAttributeSet;
+	const class UBasicAttributeSet* BasicAttributeSet;
 
 public:
 	// Sets default values for this character's properties
@@ -63,6 +72,16 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	/** Called for slap input */
+	UFUNCTION(BlueprintCallable, Category = Character)
+	void Slap();
+
+	/** Called for stop slap */
+	UFUNCTION(BlueprintCallable, Category = Character)
+	void StopSlaping();
+
+	void ResetSlapState();
 
 protected:
 	// APawn interface
